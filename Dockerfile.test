@@ -1,0 +1,20 @@
+# Build SDK fijo para reproducibilidad entre WSL, Docker y CI.
+FROM mcr.microsoft.com/dotnet/sdk:10.0.403
+
+WORKDIR /src
+
+# Copia primero los csproj para aprovechar la caché de restore.
+COPY ContadorCofres.slnx ./
+COPY src/ContadorCofres.Core/ContadorCofres.Core.csproj src/ContadorCofres.Core/
+COPY src/ContadorCofres.App/ContadorCofres.App.csproj src/ContadorCofres.App/
+COPY tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj tests/ContadorCofres.Core.Tests/
+COPY tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj tests/ContadorCofres.Desktop.Tests/
+
+COPY NuGet.config* ./
+RUN dotnet restore tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj \
+ && dotnet restore tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj
+
+COPY . .
+
+# Solo proyectos testeables en Linux: Core y App (nada de WPF).
+CMD ["sh", "-c", "dotnet test tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj --nologo -v q && dotnet test tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj --nologo -v q"]

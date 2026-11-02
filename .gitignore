@@ -1,0 +1,8 @@
+bin/
+obj/
+artifacts/
+TestResults/
+*.tmp
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
