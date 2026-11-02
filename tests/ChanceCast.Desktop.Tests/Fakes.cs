@@ -81,6 +81,20 @@ public sealed class FakeHotkeys : IGlobalHotkeyService
     public void Raise(GlobalHotkeyAction action) => Pressed?.Invoke(this, action);
 }
 
+/// <summary>Temas simulados para pruebas de ViewModels.</summary>
+public sealed class FakeThemeManager : App.Abstractions.IThemeManager
+{
+    public AppTheme Current { get; private set; } = AppTheme.Dark;
+
+    public List<AppTheme> Applied { get; } = [];
+
+    public void Apply(AppTheme theme)
+    {
+        Current = theme;
+        Applied.Add(theme);
+    }
+}
+
 public static class ViewModelFactory
 {
     public static (MatchService Service, FakeStore Store, FakeDialogs Dialogs, FakeHotkeys Hotkeys, AppStatus Status) Create(

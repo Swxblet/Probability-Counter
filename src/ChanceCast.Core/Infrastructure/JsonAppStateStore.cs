@@ -2,6 +2,7 @@ using System.IO;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ChanceCast.Core.Abstractions;
 using ChanceCast.Core.Models;
 
@@ -307,6 +308,7 @@ public sealed class JsonAppStateStore : IAppStateStore
                 DecrementHotkey = settingsDto.DecrementHotkey,
                 EditCountHotkey = settingsDto.EditCountHotkey,
                 StartMatchHotkey = settingsDto.StartMatchHotkey,
+                Theme = settingsDto.Theme ?? AppTheme.Dark,
             },
             ActiveMatch = active,
             Matches = matches,
@@ -338,6 +340,7 @@ public sealed class JsonAppStateStore : IAppStateStore
             DecrementHotkey = state.Settings.DecrementHotkey,
             EditCountHotkey = state.Settings.EditCountHotkey,
             StartMatchHotkey = state.Settings.StartMatchHotkey,
+            Theme = state.Settings.Theme,
         },
         ActiveMatch = state.ActiveMatch is null
             ? null
@@ -381,6 +384,10 @@ public sealed class JsonAppStateStore : IAppStateStore
         public HotkeyBinding? DecrementHotkey { get; set; } = AppSettings.CreateDefault().DecrementHotkey;
         public HotkeyBinding? EditCountHotkey { get; set; } = AppSettings.CreateDefault().EditCountHotkey;
         public HotkeyBinding? StartMatchHotkey { get; set; } = AppSettings.CreateDefault().StartMatchHotkey;
+
+        // El tema tampoco es obligatorio: los archivos sin este campo usan oscuro.
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public AppTheme? Theme { get; set; } = AppTheme.Dark;
     }
 
     private sealed class ActiveMatchDto

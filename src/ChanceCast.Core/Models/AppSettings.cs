@@ -25,5 +25,8 @@ public sealed record AppSettings
     public HotkeyBinding? EditCountHotkey { get; init; } = new("E", HotkeyModifiers.Control);
     public HotkeyBinding? StartMatchHotkey { get; init; } = new("N", HotkeyModifiers.Control);
 
+    /// <summary>Tema visual. Oscuro por defecto.</summary>
+    public AppTheme Theme { get; init; } = AppTheme.Dark;
+
     public static AppSettings CreateDefault() => new();
 }

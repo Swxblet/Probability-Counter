@@ -78,6 +78,20 @@ public class SettingsViewModelTests
     }
 
     [Fact]
+    public void DenominatorPercentText_UpdatesWithDenominator()
+    {
+        var vm = new SettingsViewModel(AppSettings.CreateDefault());
+
+        Assert.StartsWith("≈", vm.DenominatorPercentText);
+
+        vm.DenominatorText = "2";
+        Assert.Equal("≈ 50 %", vm.DenominatorPercentText.Replace(",", "."));
+
+        vm.DenominatorText = "abc";
+        Assert.Equal("—", vm.DenominatorPercentText);
+    }
+
+    [Fact]
     public void DisplayNames_UpdateOnChange()
     {
         var vm = new SettingsViewModel(AppSettings.CreateDefault());
@@ -89,6 +103,28 @@ public class SettingsViewModelTests
         vm.IncrementHotkey = new HotkeyBinding("F5", HotkeyModifiers.Control | HotkeyModifiers.Shift);
 
         Assert.Equal("Ctrl + Shift + F5", vm.IncrementDisplay);
+    }
+
+    [Fact]
+    public void Constructor_CopiesThemeAsDarkFlag()
+    {
+        var dark = new SettingsViewModel(AppSettings.CreateDefault() with { Theme = AppTheme.Dark });
+        var light = new SettingsViewModel(AppSettings.CreateDefault() with { Theme = AppTheme.Light });
+
+        Assert.True(dark.IsDarkTheme);
+        Assert.False(light.IsDarkTheme);
+    }
+
+    [Fact]
+    public void TrySave_PersistsTheme()
+    {
+        var toLight = new SettingsViewModel(AppSettings.CreateDefault()) { IsDarkTheme = false };
+        var toDark = new SettingsViewModel(AppSettings.CreateDefault() with { Theme = AppTheme.Light }) { IsDarkTheme = true };
+
+        Assert.True(toLight.TrySave());
+        Assert.True(toDark.TrySave());
+        Assert.Equal(AppTheme.Light, toLight.Result!.Theme);
+        Assert.Equal(AppTheme.Dark, toDark.Result!.Theme);
     }
 
     [Fact]

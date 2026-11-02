@@ -17,6 +17,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly MatchService _service;
     private readonly IDialogService _dialogs;
     private readonly IGlobalHotkeyService _hotkeys;
+    private readonly IThemeManager _themes;
 
     [ObservableProperty]
     private bool _alwaysOnTop;
@@ -25,6 +26,7 @@ public sealed partial class MainViewModel : ObservableObject
         MatchService service,
         IDialogService dialogs,
         IGlobalHotkeyService hotkeys,
+        IThemeManager themes,
         AppStatus status,
         CounterViewModel counter,
         HistoryViewModel history,
@@ -33,6 +35,7 @@ public sealed partial class MainViewModel : ObservableObject
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
         _hotkeys = hotkeys ?? throw new ArgumentNullException(nameof(hotkeys));
+        _themes = themes ?? throw new ArgumentNullException(nameof(themes));
         Status = status ?? throw new ArgumentNullException(nameof(status));
         Counter = counter ?? throw new ArgumentNullException(nameof(counter));
         History = history ?? throw new ArgumentNullException(nameof(history));
@@ -147,7 +150,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void RefreshFromState()
     {
-        AlwaysOnTop = _service.Current.Settings.AlwaysOnTop;
+        var settings = _service.Current.Settings;
+        AlwaysOnTop = settings.AlwaysOnTop;
+        _themes.Apply(settings.Theme);
         RefreshHotkeys();
     }
 

@@ -2,7 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:ChanceCast.Desktop.Views"
-        Title="ChanceCast" Height="640" Width="520" MinHeight="480" MinWidth="420"
+        Title="ChanceCast" Height="680" Width="560" MinHeight="520" MinWidth="440"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="{StaticResource AppFontFamily}"
         Topmost="{Binding AlwaysOnTop}"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Grid>
@@ -12,28 +14,62 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="12,8,12,4">
-            <TextBlock Text="ChanceCast" FontWeight="Bold" FontSize="16"
-                       VerticalAlignment="Center"/>
-            <Button Content="Configuración" DockPanel.Dock="Right" Padding="12,4"
+        <DockPanel Grid.Row="0" Margin="20,14,20,6" LastChildFill="False">
+            <StackPanel>
+                <TextBlock Text="ChanceCast" FontWeight="Bold" FontSize="20"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="Contador universal de intentos" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </StackPanel>
+            <Button Content="&#xE713;  Configuración" DockPanel.Dock="Right" Padding="14,7"
+                    VerticalAlignment="Center"
                     Command="{Binding OpenSettingsCommand}"/>
         </DockPanel>
 
-        <TabControl Grid.Row="1" Margin="8,0,8,4">
-            <TabItem Header="Contador">
+        <TabControl Grid.Row="1" Margin="12,0,12,6">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE93E; " FontFamily="{StaticResource IconFontFamily}"/>
+                        <TextBlock Text="Contador"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <views:CounterView DataContext="{Binding Counter}"/>
             </TabItem>
-            <TabItem Header="Historial">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE81C; " FontFamily="{StaticResource IconFontFamily}"/>
+                        <TextBlock Text="Historial"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <views:HistoryView DataContext="{Binding History}"/>
             </TabItem>
-            <TabItem Header="Estadísticas">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE9D9; " FontFamily="{StaticResource IconFontFamily}"/>
+                        <TextBlock Text="Estadísticas"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <views:StatisticsView DataContext="{Binding Statistics}"/>
             </TabItem>
         </TabControl>
 
         <StatusBar Grid.Row="2">
             <StatusBarItem>
-                <TextBlock Text="{Binding Status.Message}"/>
+                <TextBlock Text="{Binding Status.Message}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Status.IsError}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </StatusBarItem>
         </StatusBar>
     </Grid>

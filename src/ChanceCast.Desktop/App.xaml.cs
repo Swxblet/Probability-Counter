@@ -42,6 +42,7 @@ public partial class App : Application
         var store = new JsonAppStateStore(AppPaths.DataFile, AppPaths.BackupFile, logger);
         var load = store.Load();
 
+        var themes = new ThemeManager(this);
         var service = new MatchService(store, logger);
         var status = new AppStatus();
         var dialogs = new DialogService();
@@ -52,6 +53,7 @@ public partial class App : Application
             service,
             dialogs,
             _hotkeys,
+            themes,
             status,
             new CounterViewModel(service, dialogs, status),
             new HistoryViewModel(service, dialogs, exporter, status),

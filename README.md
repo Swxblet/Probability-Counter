@@ -1,12 +1,11 @@
 # ChanceCast
 
-Aplicación de escritorio para Windows que cuenta intentos abiertos por sesión,
-mantiene un historial local y estima probabilidades de obtener un ítem a partir
-de una tasa configurable.
+Aplicación de escritorio para Windows que cuenta intentos por sesión
+(sirve para cofres, pulls de gacha, shinies o cualquier evento repetible),
+mantiene un historial local y estima probabilidades a partir de una tasa configurable.
 
 La probabilidad predeterminada es de **1 entre 700 000** por intento. Es un dato
-proporcionado por el usuario, **no** una probabilidad de Fortnite verificada por
-la aplicación.
+proporcionado por el usuario, **no** una probabilidad verificada por la aplicación.
 
 ## Uso (usuario final)
 
@@ -15,9 +14,10 @@ la aplicación.
 3. **Contador**: `Iniciar sesión` → `+1` por intento (o tu atajo) → `Terminar sesión`.
 4. **Historial**: editar o eliminar registros, exportar CSV.
 5. **Estadísticas**: actividad, probabilidad y proyecciones.
-6. **Configuración**: nombre del ítem, denominador, siempre visible, confirmación
-   al terminar y atajos de teclado (locales siempre; `+1`/`−1` opcionales como
-   globales aunque el juego esté enfocado).
+6. **Configuración**: nombre del evento, denominador (con su equivalente en %),
+   tema claro/oscuro, siempre visible, confirmación al terminar y atajos de
+   teclado (locales siempre; `+1`/`−1` opcionales como globales aunque otra
+   app esté enfocada).
 
 Los datos viven en `%LOCALAPPDATA%\ChanceCast\` (`data.json`,
 `data.backup.json`, `logs\`). Podés mover o reemplazar el `.exe` sin perder datos.
@@ -43,7 +43,7 @@ Los datos viven en `%LOCALAPPDATA%\ChanceCast\` (`data.json`,
 - Tests de `Core` y `App`: corren en **WSL/Linux** (el host con Smart App
   Control activado bloquea aleatoriamente los DLL recién compilados):
   `~/.dotnet/dotnet test tests/ChanceCast.Core.Tests/...` y el de Desktop.Tests.
-- Imagen de tests: `docker build -f Dockerfile.test -t intentos-test . && docker run --rm intentos-test`
+- Imagen de tests: `docker build -f Dockerfile.test -t chancecast-test . && docker run --rm chancecast-test`
   (requiere Docker Desktop con daemon corriendo).
 - Publicar: `dotnet publish src/ChanceCast.Desktop -c Release -r win-x64
   --self-contained true -p:PublishSingleFile=true

@@ -8,25 +8,27 @@ namespace ChanceCast.Desktop.Tests;
 
 public class MainViewModelTests
 {
-    private static (MainViewModel Vm, MatchService Service, FakeDialogs Dialogs, FakeHotkeys Hotkeys, AppStatus Status) Create(AppState? initial = null)
+    private static (MainViewModel Vm, MatchService Service, FakeDialogs Dialogs, FakeHotkeys Hotkeys, FakeThemeManager Themes, AppStatus Status) Create(AppState? initial = null)
     {
         var (service, _, dialogs, hotkeys, status) = ViewModelFactory.Create(initial);
+        var themes = new FakeThemeManager();
         var exporter = new App.Services.CsvExportService(dialogs, NullLogger.Instance);
         var vm = new MainViewModel(
             service,
             dialogs,
             hotkeys,
+            themes,
             status,
             new CounterViewModel(service, dialogs, status),
             new HistoryViewModel(service, dialogs, exporter, status),
             new StatisticsViewModel(service));
-        return (vm, service, dialogs, hotkeys, status);
+        return (vm, service, dialogs, hotkeys, themes, status);
     }
 
     [Fact]
     public void ApplyLoadResult_Loaded_SetsOkStatus()
     {
-        var (vm, _, _, _, status) = Create();
+        var (vm, _, _, _, _, status) = Create();
         var state = new AppState
         {
             Matches = new[] { new CompletedMatch(Guid.NewGuid(), DateTimeOffset.Now.AddHours(-1), DateTimeOffset.Now, 4) },
@@ -42,7 +44,7 @@ public class MainViewModelTests
     [Fact]
     public void ApplyLoadResult_Recovered_ShowsError()
     {
-        var (vm, _, _, _, status) = Create();
+        var (vm, _, _, _, _, status) = Create();
 
         vm.ApplyLoadResult(AppStateLoadResult.Recovered(AppState.CreateDefault(), "restaurado"));
 
@@ -53,7 +55,7 @@ public class MainViewModelTests
     [Fact]
     public void ApplyLoadResult_Incompatible_ShowsErrorAndEmptyState()
     {
-        var (vm, service, _, _, status) = Create();
+        var (vm, service, _, _, _, status) = Create();
 
         vm.ApplyLoadResult(AppStateLoadResult.Incompatible("versión más reciente"));
 
@@ -65,7 +67,7 @@ public class MainViewModelTests
     [Fact]
     public void ApplyLoadResult_NoDataWithFiles_ShowsError()
     {
-        var (vm, _, _, _, status) = Create();
+        var (vm, _, _, _, _, status) = Create();
 
         vm.ApplyLoadResult(AppStateLoadResult.NoData("archivos ilegibles", filesExisted: true));
 
@@ -75,7 +77,7 @@ public class MainViewModelTests
     [Fact]
     public void ApplyLoadResult_FirstRun_ShowsWelcome()
     {
-        var (vm, _, _, _, status) = Create();
+        var (vm, _, _, _, _, status) = Create();
 
         vm.ApplyLoadResult(AppStateLoadResult.NoData("primer inicio", filesExisted: false));
 
@@ -86,7 +88,7 @@ public class MainViewModelTests
     [Fact]
     public async Task OpenSettings_Cancel_DoesNotModify()
     {
-        var (vm, service, dialogs, _, _) = Create();
+        var (vm, service, dialogs, _, _, _) = Create();
         dialogs.SettingsResult = null;
 
         await vm.OpenSettingsCommand.ExecuteAsync(null);
@@ -97,7 +99,7 @@ public class MainViewModelTests
     [Fact]
     public async Task OpenSettings_Save_AppliesSettings()
     {
-        var (vm, service, dialogs, _, _) = Create();
+        var (vm, service, dialogs, _, _, _) = Create();
         dialogs.SettingsResult = AppSettings.CreateDefault() with { DropDenominator = 123, AlwaysOnTop = true };
 
         await vm.OpenSettingsCommand.ExecuteAsync(null);
@@ -109,7 +111,7 @@ public class MainViewModelTests
     [Fact]
     public void TryHandleLocalHotkey_RoutesToCommands()
     {
-        var (vm, service, _, _, _) = Create();
+        var (vm, service, _, _, _, _) = Create();
         service.Initialize(new AppState
         {
             ActiveMatch = new ActiveMatch(Guid.NewGuid(), DateTimeOffset.Now, 0),
@@ -124,7 +126,7 @@ public class MainViewModelTests
     [Fact]
     public void TryHandleLocalHotkey_UnknownKey_ReturnsFalse()
     {
-        var (vm, _, _, _, _) = Create();
+        var (vm, _, _, _, _, _) = Create();
 
         Assert.False(vm.TryHandleLocalHotkey("F24", HotkeyModifiers.Control | HotkeyModifiers.Alt));
     }
@@ -132,7 +134,7 @@ public class MainViewModelTests
     [Fact]
     public void GlobalHotkey_RoutesToIncrementAndDecrement()
     {
-        var (vm, service, _, hotkeys, _) = Create();
+        var (vm, service, _, hotkeys, _, _) = Create();
         service.Initialize(new AppState
         {
             ActiveMatch = new ActiveMatch(Guid.NewGuid(), DateTimeOffset.Now, 0),
@@ -146,9 +148,38 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public void ApplyLoadResult_AppliesStoredTheme()
+    {
+        var (vm, _, _, _, themes, _) = Create();
+        var state = new AppState
+        {
+            Settings = AppSettings.CreateDefault() with { Theme = AppTheme.Light },
+        };
+
+        vm.ApplyLoadResult(AppStateLoadResult.Loaded(state));
+
+        Assert.Equal(AppTheme.Light, themes.Current);
+    }
+
+    [Fact]
+    public void RefreshFromState_ReappliesThemeAfterSettingsChange()
+    {
+        var (vm, service, _, _, themes, _) = Create();
+        vm.ApplyLoadResult(AppStateLoadResult.Loaded(AppState.CreateDefault()));
+        Assert.Equal(AppTheme.Dark, themes.Current);
+
+        service.Initialize(new AppState
+        {
+            Settings = AppSettings.CreateDefault() with { Theme = AppTheme.Light },
+        });
+
+        Assert.Equal(AppTheme.Light, themes.Current);
+    }
+
+    [Fact]
     public void RefreshFromState_UpdatesAlwaysOnTopAndHotkeys()
     {
-        var (vm, service, _, hotkeys, _) = Create();
+        var (vm, service, _, hotkeys, _, _) = Create();
         service.Initialize(new AppState
         {
             Settings = AppSettings.CreateDefault() with { AlwaysOnTop = true, EnableGlobalHotkeys = true },
@@ -161,7 +192,7 @@ public class MainViewModelTests
     [Fact]
     public void AlwaysOnTop_Change_RaisesNotification()
     {
-        var (vm, service, _, _, _) = Create();
+        var (vm, service, _, _, _, _) = Create();
         var raised = false;
         vm.PropertyChanged += (_, e) =>
         {

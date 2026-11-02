@@ -1,6 +1,8 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ChanceCast.Core.Models;
+using ChanceCast.Core.Services;
 
 namespace ChanceCast.App.ViewModels;
 
@@ -21,6 +23,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _denominatorText = AppSettings.DefaultDropDenominator.ToString();
 
+    /// <summary>Equivalente en porcentaje del denominador, solo lectura.</summary>
+    [ObservableProperty]
+    private string _denominatorPercentText = "—";
+
     [ObservableProperty]
     private bool _alwaysOnTop;
 
@@ -29,6 +35,10 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _enableGlobalHotkeys;
+
+    /// <summary>True = oscuro, false = claro.</summary>
+    [ObservableProperty]
+    private bool _isDarkTheme = true;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -69,16 +79,20 @@ public sealed partial class SettingsViewModel : ObservableObject
         AlwaysOnTop = settings.AlwaysOnTop;
         ConfirmFinish = settings.ConfirmFinish;
         EnableGlobalHotkeys = settings.EnableGlobalHotkeys;
+        IsDarkTheme = settings.Theme == AppTheme.Dark;
         IncrementHotkey = settings.IncrementHotkey;
         DecrementHotkey = settings.DecrementHotkey;
         EditCountHotkey = settings.EditCountHotkey;
         StartMatchHotkey = settings.StartMatchHotkey;
+        // El valor inicial puede coincidir con el del campo y no notificar cambio.
+        DenominatorPercentText = PercentOf(DenominatorText);
     }
 
     /// <summary>Resultado validado tras <see cref="TrySave"/>; null si no se guardó.</summary>
     public AppSettings? Result { get; private set; }
 
     partial void OnIncrementHotkeyChanged(HotkeyBinding? value) => IncrementDisplay = DisplayOf(value);
+    partial void OnDenominatorTextChanged(string value) => DenominatorPercentText = PercentOf(value);
     partial void OnDecrementHotkeyChanged(HotkeyBinding? value) => DecrementDisplay = DisplayOf(value);
     partial void OnEditCountHotkeyChanged(HotkeyBinding? value) => EditCountDisplay = DisplayOf(value);
     partial void OnStartMatchHotkeyChanged(HotkeyBinding? value) => StartMatchHotkeyChanged(value);
@@ -86,6 +100,13 @@ public sealed partial class SettingsViewModel : ObservableObject
     private void StartMatchHotkeyChanged(HotkeyBinding? value) => StartMatchDisplay = DisplayOf(value);
 
     private static string DisplayOf(HotkeyBinding? binding) => binding?.DisplayName ?? "Sin asignar";
+
+    private static string PercentOf(string text)
+    {
+        if (long.TryParse(text.Trim(), out var denominator) && denominator >= 1)
+            return "≈ " + ProbabilityFormatter.FormatPercent(1.0 / denominator, CultureInfo.InvariantCulture);
+        return "—";
+    }
 
     private bool CanSave() => !string.IsNullOrWhiteSpace(DenominatorText);
 
@@ -146,6 +167,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             DecrementHotkey = DecrementHotkey,
             EditCountHotkey = EditCountHotkey,
             StartMatchHotkey = StartMatchHotkey,
+            Theme = IsDarkTheme ? AppTheme.Dark : AppTheme.Light,
         };
         return true;
     }

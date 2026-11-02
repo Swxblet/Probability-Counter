@@ -2,75 +2,100 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ChanceCast.App.ViewModels;assembly=ChanceCast.App"
-        Title="Configuración" Height="560" Width="460"
+        Title="Configuración" Height="640" Width="480"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        ShowInTaskbar="False">
+        ShowInTaskbar="False"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="{StaticResource AppFontFamily}">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20,16,20,16">
-            <TextBlock Text="Nombre del ítem" FontWeight="Bold"/>
-            <TextBox Text="{Binding EventName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12"/>
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Evento" Style="{StaticResource SectionTitleStyle}"/>
+                    <TextBlock Text="Nombre del evento" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBox Text="{Binding EventName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10"/>
+                    <TextBlock Text="Denominador de probabilidad (1 entre N)"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBox Text="{Binding DenominatorText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4"/>
+                    <TextBlock Text="{Binding DenominatorPercentText}" Margin="0,0,0,6"
+                               Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{x:Static vm:SettingsViewModel.ProbabilityChangeWarning}"
+                               Style="{StaticResource SecondaryTextStyle}" FontStyle="Italic"/>
+                </StackPanel>
+            </Border>
 
-            <TextBlock Text="Denominador de probabilidad (1 entre N)" FontWeight="Bold"/>
-            <TextBox Text="{Binding DenominatorText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4"/>
-            <TextBlock Text="{x:Static vm:SettingsViewModel.ProbabilityChangeWarning}"
-                       TextWrapping="Wrap" FontStyle="Italic" Margin="0,0,0,12"/>
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Apariencia y comportamiento" Style="{StaticResource SectionTitleStyle}"/>
+                    <CheckBox Content="Tema oscuro (sin marcar: tema claro)" IsChecked="{Binding IsDarkTheme}"/>
+                    <CheckBox Content="Ventana siempre visible" IsChecked="{Binding AlwaysOnTop}"/>
+                    <CheckBox Content="Confirmar al terminar sesión" IsChecked="{Binding ConfirmFinish}"/>
+                    <CheckBox Content="Atajos globales para +1/−1 (funcionan aunque otra app esté enfocada)"
+                              IsChecked="{Binding EnableGlobalHotkeys}">
+                        <CheckBox.ContentTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </CheckBox.ContentTemplate>
+                    </CheckBox>
+                </StackPanel>
+            </Border>
 
-            <CheckBox Content="Ventana siempre visible" IsChecked="{Binding AlwaysOnTop}" Margin="0,0,0,6"/>
-            <CheckBox Content="Confirmar al terminar sesión" IsChecked="{Binding ConfirmFinish}" Margin="0,0,0,6"/>
-            <CheckBox Content="Atajos globales para +1/−1 (funcionan aunque el juego esté enfocado)"
-                      IsChecked="{Binding EnableGlobalHotkeys}" Margin="0,0,0,12"/>
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Atajos de teclado" Style="{StaticResource SectionTitleStyle}"/>
+                    <TextBlock Text="Enfocá un casillero y pulsá la combinación. Los atajos con una sola tecla no se activan mientras escribís en un texto."
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,8"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-            <TextBlock Text="Atajos de teclado" FontWeight="Bold" Margin="0,0,0,6"/>
-            <TextBlock Text="Enfocá un casillero y pulsá la combinación. Los atajos con una sola tecla no se activan mientras escribís en un texto."
-                       TextWrapping="Wrap" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Sumar (+1)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding IncrementDisplay, Mode=OneWay}"
+                                 IsReadOnly="True" Margin="0,3,6,3" Tag="Increment"
+                                 PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
+                        <Button Grid.Row="0" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
+                                Click="ClearHotkey_Click" Tag="Increment"/>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Restar (−1)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DecrementDisplay, Mode=OneWay}"
+                                 IsReadOnly="True" Margin="0,3,6,3" Tag="Decrement"
+                                 PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
+                        <Button Grid.Row="1" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
+                                Click="ClearHotkey_Click" Tag="Decrement"/>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Sumar (+1)" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding IncrementDisplay, Mode=OneWay}"
-                         IsReadOnly="True" Margin="0,3,6,3" Tag="Increment"
-                         PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
-                <Button Grid.Row="0" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
-                        Click="ClearHotkey_Click" Tag="Increment"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Editar total" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditCountDisplay, Mode=OneWay}"
+                                 IsReadOnly="True" Margin="0,3,6,3" Tag="Edit"
+                                 PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
+                        <Button Grid.Row="2" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
+                                Click="ClearHotkey_Click" Tag="Edit"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Restar (−1)" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DecrementDisplay, Mode=OneWay}"
-                         IsReadOnly="True" Margin="0,3,6,3" Tag="Decrement"
-                         PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
-                <Button Grid.Row="1" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
-                        Click="ClearHotkey_Click" Tag="Decrement"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Nueva sesión" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding StartMatchDisplay, Mode=OneWay}"
+                                 IsReadOnly="True" Margin="0,3,6,3" Tag="Start"
+                                 PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
+                        <Button Grid.Row="3" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
+                                Click="ClearHotkey_Click" Tag="Start"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Editar total" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditCountDisplay, Mode=OneWay}"
-                         IsReadOnly="True" Margin="0,3,6,3" Tag="Edit"
-                         PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
-                <Button Grid.Row="2" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
-                        Click="ClearHotkey_Click" Tag="Edit"/>
+            <TextBlock Text="{Binding ValidationError}" Style="{StaticResource ErrorTextStyle}"
+                       Margin="0,0,0,8" Visibility="{Binding ValidationError, Converter={StaticResource NullToCollapsedConverter}}"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Nueva sesión" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding StartMatchDisplay, Mode=OneWay}"
-                         IsReadOnly="True" Margin="0,3,6,3" Tag="Start"
-                         PreviewKeyDown="HotkeyBox_PreviewKeyDown" ToolTip="Enfocá y pulsá el atajo"/>
-                <Button Grid.Row="3" Grid.Column="2" Content="Borrar" Padding="8,2" Margin="0,3,0,3"
-                        Click="ClearHotkey_Click" Tag="Start"/>
-            </Grid>
-
-            <TextBlock Text="{Binding ValidationError}" Foreground="DarkRed" TextWrapping="Wrap"
-                       Margin="0,8,0,0" Visibility="{Binding ValidationError, Converter={StaticResource NullToCollapsedConverter}}"/>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-                <Button Content="Guardar" Width="90" Margin="0,0,8,0" IsDefault="True" Click="Save_Click"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Guardar" Width="90" Margin="0,0,8,0" IsDefault="True"
+                        Style="{StaticResource PrimaryButtonStyle}" Click="Save_Click"/>
                 <Button Content="Cancelar" Width="90" IsCancel="True"/>
             </StackPanel>
         </StackPanel>

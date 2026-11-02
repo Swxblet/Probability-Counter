@@ -84,6 +84,51 @@ public class JsonAppStateStoreTests : IDisposable
         Assert.Contains("\"dropDenominator\"", json);
         Assert.Contains("\"activeMatch\"", json);
         Assert.Contains("\"matches\"", json);
+        Assert.Contains("\"theme\": \"Dark\"", json);
+    }
+
+    [Fact]
+    public async Task Save_ThenLoad_RoundTripsTheme()
+    {
+        var state = new AppState
+        {
+            Settings = AppSettings.CreateDefault() with { Theme = AppTheme.Light },
+        };
+
+        var store = CreateStore();
+        Assert.True((await store.SaveAsync(state)).Success);
+        var result = CreateStore().Load();
+
+        Assert.Equal(LoadStatus.Loaded, result.Status);
+        Assert.Equal(AppTheme.Light, result.State!.Settings.Theme);
+    }
+
+    [Fact]
+    public void Load_MissingTheme_FallsBackToDark()
+    {
+        // Archivos escritos antes del campo theme.
+        WriteFile(Primary,
+            "{\"schemaVersion\":1," +
+            "\"settings\":{\"eventName\":\"x\",\"dropDenominator\":700000,\"alwaysOnTop\":false,\"confirmFinish\":true}," +
+            "\"activeMatch\":null,\"matches\":[]}");
+
+        var result = CreateStore().Load();
+
+        Assert.Equal(LoadStatus.Loaded, result.Status);
+        Assert.Equal(AppTheme.Dark, result.State!.Settings.Theme);
+    }
+
+    [Fact]
+    public void Load_InvalidThemeValue_RejectsFile()
+    {
+        WriteFile(Primary,
+            "{\"schemaVersion\":1," +
+            "\"settings\":{\"eventName\":\"x\",\"dropDenominator\":700000,\"alwaysOnTop\":false,\"confirmFinish\":true,\"theme\":\"Sepia\"}," +
+            "\"activeMatch\":null,\"matches\":[]}");
+
+        var result = CreateStore().Load();
+
+        Assert.Equal(LoadStatus.NoData, result.Status);
     }
 
     [Fact]
