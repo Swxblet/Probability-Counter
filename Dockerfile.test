@@ -10,7 +10,6 @@ COPY src/ContadorCofres.App/ContadorCofres.App.csproj src/ContadorCofres.App/
 COPY tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj tests/ContadorCofres.Core.Tests/
 COPY tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj tests/ContadorCofres.Desktop.Tests/
 
-COPY NuGet.config* ./
 RUN dotnet restore tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj \
  && dotnet restore tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj
 
