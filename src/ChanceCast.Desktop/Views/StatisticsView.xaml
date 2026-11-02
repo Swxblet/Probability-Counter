@@ -1,0 +1,87 @@
+<UserControl x:Class="ChanceCast.Desktop.Views.StatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ChanceCast.App.ViewModels;assembly=ChanceCast.App">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,16,24,16" MaxWidth="560">
+            <TextBlock Text="Actividad" FontWeight="Bold" FontSize="15" Margin="0,0,0,6"/>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Sesiones finalizadas:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MatchesText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Intentos totales:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TotalAttemptsText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Promedio por sesión:"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AverageText}" FontWeight="Bold"/>
+            </Grid>
+
+            <TextBlock Text="Probabilidad" FontWeight="Bold" FontSize="15" Margin="0,0,0,6"/>
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Evento:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding EventNameText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Tasa configurada:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RateText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Probabilidad (historial):"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding HistoryProbabilityText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Probabilidad (sesión actual):"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentProbabilityText}" FontWeight="Bold"/>
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static vm:StatisticsViewModel.TheoreticalAverageLabel}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding TheoreticalAverageText}" FontWeight="Bold"/>
+            </Grid>
+            <TextBlock Text="{x:Static vm:StatisticsViewModel.HistoryDisclaimer}"
+                       FontStyle="Italic" TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+            <TextBlock Text="Proyecciones" FontWeight="Bold" FontSize="15" Margin="0,0,0,6"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Objetivo" FontWeight="Bold"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Intentos" FontWeight="Bold"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Sesiones aprox." FontWeight="Bold"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Targets[0].TargetText}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Targets[0].AttemptsText}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Targets[0].ProjectionText}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Targets[1].TargetText}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Targets[1].AttemptsText}"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Targets[1].ProjectionText}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Targets[2].TargetText}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Targets[2].AttemptsText}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Targets[2].ProjectionText}"/>
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Targets[3].TargetText}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Targets[3].AttemptsText}"/>
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Targets[3].ProjectionText}"/>
+            </Grid>
+            <TextBlock Text="{x:Static vm:StatisticsViewModel.IndependenceDisclaimer}"
+                       FontStyle="Italic" TextWrapping="Wrap" Margin="0,12,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

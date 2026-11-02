@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ChanceCast.App/ChanceCast.App.csproj" />
+    <Project Path="src/ChanceCast.Core/ChanceCast.Core.csproj" />
+    <Project Path="src/ChanceCast.Desktop/ChanceCast.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ChanceCast.Core.Tests/ChanceCast.Core.Tests.csproj" />
+    <Project Path="tests/ChanceCast.Desktop.Tests/ChanceCast.Desktop.Tests.csproj" />
+  </Folder>
+</Solution>

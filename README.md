@@ -1,6 +1,6 @@
-# Contador de Cofres
+# ChanceCast
 
-Aplicación de escritorio para Windows que cuenta cofres abiertos por partida,
+Aplicación de escritorio para Windows que cuenta intentos abiertos por sesión,
 mantiene un historial local y estima probabilidades de obtener un ítem a partir
 de una tasa configurable.
 
@@ -10,20 +10,20 @@ la aplicación.
 
 ## Uso (usuario final)
 
-1. Copiá `ContadorCofres.exe` (carpeta `artifacts/publish-single`) a donde quieras.
+1. Copiá `ChanceCast.exe` (carpeta `artifacts/publish-single`) a donde quieras.
 2. Abrilo. No necesita instalar .NET, Visual Studio ni Python.
-3. **Contador**: `Iniciar partida` → `+1` por cofre (o tu atajo) → `Terminar partida`.
+3. **Contador**: `Iniciar sesión` → `+1` por intento (o tu atajo) → `Terminar sesión`.
 4. **Historial**: editar o eliminar registros, exportar CSV.
 5. **Estadísticas**: actividad, probabilidad y proyecciones.
 6. **Configuración**: nombre del ítem, denominador, siempre visible, confirmación
    al terminar y atajos de teclado (locales siempre; `+1`/`−1` opcionales como
    globales aunque el juego esté enfocado).
 
-Los datos viven en `%LOCALAPPDATA%\ContadorCofres\` (`data.json`,
+Los datos viven en `%LOCALAPPDATA%\ChanceCast\` (`data.json`,
 `data.backup.json`, `logs\`). Podés mover o reemplazar el `.exe` sin perder datos.
 
 > Estas estimaciones suponen intentos independientes y una probabilidad constante.
-> El historial no aumenta la probabilidad del siguiente cofre.
+> El historial no aumenta la probabilidad del siguiente intento.
 
 ## Notas y límites conocidos
 
@@ -32,20 +32,20 @@ Los datos viven en `%LOCALAPPDATA%\ContadorCofres\` (`data.json`,
   Verificá que el archivo venga de tu propia publicación.
 - Los atajos globales usan `RegisterHotKey` de Windows: solo reciben el aviso
   del sistema operativo, no leen ni modifican el juego.
-- No hay detección automática de cofres, overlay sobre el juego, cuentas ni nube.
+- No hay detección automática de intentos, overlay sobre el juego, cuentas ni nube.
 
 ## Desarrollo
 
 - SDK de .NET 10 (`10.0.4xx`, ver `Dockerfile.test`), Windows para la app WPF.
-- Solución: `ContadorCofres.slnx` con `src/ContadorCofres.Core` (lógica, sin WPF),
-  `src/ContadorCofres.App` (ViewModels testeables), `src/ContadorCofres.Desktop`
+- Solución: `ChanceCast.slnx` con `src/ChanceCast.Core` (lógica, sin WPF),
+  `src/ChanceCast.App` (ViewModels testeables), `src/ChanceCast.Desktop`
   (WPF + Win32) y dos proyectos de xUnit.
 - Tests de `Core` y `App`: corren en **WSL/Linux** (el host con Smart App
   Control activado bloquea aleatoriamente los DLL recién compilados):
-  `~/.dotnet/dotnet test tests/ContadorCofres.Core.Tests/...` y el de Desktop.Tests.
-- Imagen de tests: `docker build -f Dockerfile.test -t cofres-test . && docker run --rm cofres-test`
+  `~/.dotnet/dotnet test tests/ChanceCast.Core.Tests/...` y el de Desktop.Tests.
+- Imagen de tests: `docker build -f Dockerfile.test -t intentos-test . && docker run --rm intentos-test`
   (requiere Docker Desktop con daemon corriendo).
-- Publicar: `dotnet publish src/ContadorCofres.Desktop -c Release -r win-x64
+- Publicar: `dotnet publish src/ChanceCast.Desktop -c Release -r win-x64
   --self-contained true -p:PublishSingleFile=true
   -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=false
   -o artifacts/publish-single`

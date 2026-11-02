@@ -4,16 +4,16 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0.403
 WORKDIR /src
 
 # Copia primero los csproj para aprovechar la caché de restore.
-COPY ContadorCofres.slnx ./
-COPY src/ContadorCofres.Core/ContadorCofres.Core.csproj src/ContadorCofres.Core/
-COPY src/ContadorCofres.App/ContadorCofres.App.csproj src/ContadorCofres.App/
-COPY tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj tests/ContadorCofres.Core.Tests/
-COPY tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj tests/ContadorCofres.Desktop.Tests/
+COPY ChanceCast.slnx ./
+COPY src/ChanceCast.Core/ChanceCast.Core.csproj src/ChanceCast.Core/
+COPY src/ChanceCast.App/ChanceCast.App.csproj src/ChanceCast.App/
+COPY tests/ChanceCast.Core.Tests/ChanceCast.Core.Tests.csproj tests/ChanceCast.Core.Tests/
+COPY tests/ChanceCast.Desktop.Tests/ChanceCast.Desktop.Tests.csproj tests/ChanceCast.Desktop.Tests/
 
-RUN dotnet restore tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj \
- && dotnet restore tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj
+RUN dotnet restore tests/ChanceCast.Core.Tests/ChanceCast.Core.Tests.csproj \
+ && dotnet restore tests/ChanceCast.Desktop.Tests/ChanceCast.Desktop.Tests.csproj
 
 COPY . .
 
 # Solo proyectos testeables en Linux: Core y App (nada de WPF).
-CMD ["sh", "-c", "dotnet test tests/ContadorCofres.Core.Tests/ContadorCofres.Core.Tests.csproj --nologo -v q && dotnet test tests/ContadorCofres.Desktop.Tests/ContadorCofres.Desktop.Tests.csproj --nologo -v q"]
+CMD ["sh", "-c", "dotnet test tests/ChanceCast.Core.Tests/ChanceCast.Core.Tests.csproj --nologo -v q && dotnet test tests/ChanceCast.Desktop.Tests/ChanceCast.Desktop.Tests.csproj --nologo -v q"]
